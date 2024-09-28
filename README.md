@@ -5,7 +5,7 @@
 - **SQLite format**
 ****
 
-![image](https://github.com/user-attachments/assets/7347d6ea-b609-4172-b13e-0d0228ef018c)
+![image](https://github.com/user-attachments/assets/309faf5e-f558-42d6-b7e1-d1ceb4d8e0f7)
 
 
 ## Requirements
@@ -77,7 +77,7 @@ The `vsnt` default database comes with two sample tables, `vsnt_snippets` and `v
 
 Experiment with the commands, then start creating your own database with custom tables and personal notes.
 
-<img src="https://github.com/user-attachments/assets/8e25f896-2285-4efc-8d20-3cfa2267d06b" width="200" height="96">
+<img src="https://github.com/user-attachments/assets/a2317df6-e800-4d91-a9a0-fb78c36c61ad" width="200" height="96">
 
 #### E:
 `  {number}            edit note id=number`
@@ -98,7 +98,7 @@ Column names are enclosed by angled brackets, e.g. like `<Title>`.
 
 Optionally, include a `<Tags>` column for searching #tags.
 
-<img src="https://github.com/user-attachments/assets/89dbdccf-5b45-47c6-987a-3e22334d876b" width="200" height="96">
+<img src="https://github.com/user-attachments/assets/cf2128dd-2da8-4052-8d66-961f9cdeedd5" width="200" height="96">
 
 #### S:
 `  {words|#tags|or}    search words and/or #tags`
@@ -123,6 +123,9 @@ Search phrases are concatenated with "and" by default. Toggle "or" concatenation
 `  E                   edit note`
 
 ## Defaults
-Add your database paths to the `vsnt_config` table for quick navigation between different databases.
+Add your database file paths to the `vsnt_config` table to quickly navigate between different databases.
+
+<img src="https://github.com/user-attachments/assets/32664f9b-31aa-4838-9be1-ad5e393275d3" width="200" height="96">
+
 
 
