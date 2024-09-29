@@ -13,8 +13,7 @@ let b:vsnt_table = 'vsnt_snippets'
 let b:vsnt_higroup = 'Underlined'
 
 let b:databases = []
-let b:tables = ['vsnt_snippets', 'vsnt_peers', 'vsnt_defaults']
-let b:tables = []
+let b:tables = ['vsnt_config', 'vsnt_peers', 'vsnt_snippets']
 let b:template = ['_Title', '_Description', '_Tags', '_References', '_Code']
 let b:id = 0
 
@@ -32,10 +31,15 @@ func! s:change_table(table)
   if a:table ==# '*' 
     "show all tables
     call s:init_tables()
-    :5,$d
-    for i in range(len(b:tables))
-      call setline(5+i, i+1 . '. ' . b:tables[i])   
-    endfor
+    if len(b:tables) > 0
+      :silent! 4,$d
+      call append(3, ['',''])
+      for i in range(len(b:tables))
+        call setline(5+i, i+1 . '. ' . b:tables[i])   
+      endfor
+    else
+      let b:message = 'Create a table with "E: ct <name>"'
+    endif
   elseif len(a:table) > 0
     "select table and change b:template based on its sql schema
     let t = str2nr(a:table) > 0 && str2nr(a:table) <= len(b:tables) 
@@ -43,7 +47,7 @@ func! s:change_table(table)
          \: a:table
     let result = s:query_database('.schema ' . t, 'list')
 
-    if exists('result[0]') && matchstrpos(result[0], 'CREATE TABLE ' . t)[1] == 0
+    if exists('result[0]') && matchstrpos(result[0], 'CREATE TABLE ' . t)[1] >= 0
       let b:vsnt_table = t
       let b:template = []
       let columns = split(result[0], ',')[1:]
@@ -54,7 +58,6 @@ func! s:change_table(table)
       endfor
       call s:edit_new()
     else
-      :silent! 4,$d
       call setline(3, b:mode . ': table not found')
     endif
   endif
@@ -65,9 +68,11 @@ func! s:init_tables()
   
   if exists('result[0]') && matchstrpos(result[0], 'Error')[1] < 0
     let b:tables = len(result) > 0
-              \? split(trim(result[0]), '\s\+')
+              \? sort(split(trim(result[0]), '\s\+'))
               \: [] 
-  endif
+  else
+    let b:tables = []
+  endif 
 endfunc
 
 func! s:create_table(table)
@@ -104,7 +109,8 @@ endfunc
 func! s:change_database(db) 
    if a:db ==# '*'   
     "show all databases
-    :5,$d
+    :silent! 4,$d
+    call append(3, ['',''])
     for i in range(len(b:databases))
       call setline(5+i, i+1 . '. ' . b:databases[i])   
     endfor
@@ -131,7 +137,7 @@ func! s:change_database(db)
         call s:init_tables()
         if len(b:tables) > 0
           call s:change_table(b:tables[0])
-          :1,4d
+          :silent! 1,4d
           call s:set_header()
         else
           let b:vsnt_table = ''
@@ -238,7 +244,7 @@ func! s:edit_new()
     endfor
   else
     call append(0, ['<Title>', '', '<>', '', '<>'])
-    let b:message = 'Create a new template ("E: ct <name>")'
+    let b:message = 'Create a table with "E: ct <name>"'
   endif
   
   call s:set_header()
@@ -410,7 +416,7 @@ func! s:reload_mode(mode)
 endfunc
 
 func! s:set_header()
-  :call append(0, ['vsnt - vim simple notebook',b:vsnt_database . ' ' . b:vsnt_table,b:mode . ':  ' . b:message . ' ',''])
+  :call append(0, ['vsnt - vim simple notebook',b:vsnt_database . ' ' . b:vsnt_table,b:mode . ':  ' . b:message . ' ', ''])
   let b:message = ''
 endfunc
 
@@ -435,6 +441,7 @@ endfunc
 
 func! s:show_help()
   :silent! 4,$d
+  call append(3, ['',''])
  
   let text = [
               \'',
@@ -615,7 +622,7 @@ func! s:vsnt_config()
   let b:vsnt_default = @d
   let b:vsnt_database = b:vsnt_default
   call add(b:databases, b:vsnt_database)
-  
+
   "read user database configs
   let q = 'SELECT ' . '_Database'  . ' ' .
          \'FROM '   . 'vsnt_config' . ';'
@@ -628,6 +635,14 @@ func! s:vsnt_config()
         call add(b:databases, i)
       endif
     endfor
+  endif
+  "set title color (highlight group) 
+  let q = 'SELECT ' . '_Highlight'  . ' ' .
+         \'FROM '   . 'vsnt_config' . ';'
+  let result = s:query_database(q, 'list')
+  
+  if exists('result[0]') && matchstrpos(result[0], 'Error')[1] < 0
+    let b:vsnt_higroup = result[0]
   endif
 endfunc
 
