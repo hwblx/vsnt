@@ -7,7 +7,6 @@
 
 ![image](https://github.com/user-attachments/assets/309faf5e-f558-42d6-b7e1-d1ceb4d8e0f7)
 
-
 ## Requirements
 Vim >= 8.1.0875 or Neovim >= 0.4.4
 
@@ -123,7 +122,9 @@ Search phrases are concatenated with "and" by default. Toggle "or" concatenation
 `  E                   edit note`
 
 ## Defaults
-Add your database file paths to the `vsnt_config` table to quickly navigate between different databases.
+Insert the paths of your database files into the `vsnt_config` table to easily navigate between different databases.
+
+You can change the default title color to a different highlight group (`:hi`) in the `vsnt_default` entry.
 
 <img src="https://github.com/user-attachments/assets/32664f9b-31aa-4838-9be1-ad5e393275d3" width="200" height="96">
 
