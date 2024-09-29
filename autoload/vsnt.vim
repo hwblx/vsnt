@@ -636,13 +636,20 @@ func! s:vsnt_config()
       endif
     endfor
   endif
-  "set title color (highlight group) 
-  let q = 'SELECT ' . '_Highlight'  . ' ' .
-         \'FROM '   . 'vsnt_config' . ';'
-  let result = s:query_database(q, 'list')
-  
-  if exists('result[0]') && matchstrpos(result[0], 'Error')[1] < 0
-    let b:vsnt_higroup = result[0]
+
+  if len(b:databases) > 1
+    let q = 'SELECT ' . '_Highlight'  . 
+           \' FROM '  . 'vsnt_config' . 
+           \' WHERE ' . '_Database'   . 
+           \' LIKE '  . '"%'. b:databases[1] . '%";'   
+    let result = s:query_database(q, 'list')
+
+    if exists('result[0]') && matchstrpos(result[0], 'Error')[1] < 0
+      let b:vsnt_higroup = result[0]
+    endif
+    let b:vsnt_database = b:databases[1]
+    call s:init_tables()
+    call s:change_table(1)
   endif
 endfunc
 
