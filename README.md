@@ -108,7 +108,9 @@ Words are searched for in the first column of the table (the top note item).
 
 #Tags are searched in `<Tags>` if present, otherwise in the first column.
 
-Search phrases are concatenated with "and" by default. Toggle "or" concatenation like
+Search phrases are concatenated with "and" by default. 
+
+Toggle "or" concatenation like
 
 `S: html #python or`
 
@@ -124,9 +126,9 @@ Search phrases are concatenated with "and" by default. Toggle "or" concatenation
 ## Defaults
 Insert the paths of your database files into the `vsnt_config` table to easily navigate between different databases.
 
-You can change the default title color to a different highlight group (`:hi`) in the `vsnt_default` entry.
+Change the title color to another highlight group (`:hi`) under `<Highlight>`.
 
-<img src="https://github.com/user-attachments/assets/32664f9b-31aa-4838-9be1-ad5e393275d3" width="200" height="96">
+<img src="https://github.com/user-attachments/assets/21a7e10f-52a0-4888-905d-98af0eaf2cc2" width="200" height="96">
 
 
 
