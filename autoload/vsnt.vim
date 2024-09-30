@@ -2,7 +2,7 @@
 " Filename: autoload/vsnt.vim
 " Author: hwblx
 " License: MIT License
-" Last Change: 2024/09/27
+" Last Change: 2024/09/30
 " =====================================
 
 let s:save_cpo = &cpo
@@ -38,7 +38,7 @@ func! s:change_table(table)
         call setline(5+i, i+1 . '. ' . b:tables[i])   
       endfor
     else
-      let b:message = 'Create a table with "E: ct <name>"'
+      call s:edit_new()
     endif
   elseif len(a:table) > 0
     "select table and change b:template based on its sql schema
@@ -60,6 +60,8 @@ func! s:change_table(table)
     else
       call setline(3, b:mode . ': table not found')
     endif
+  else
+    let b:message = 'Create a table with "E: ct <name>"'
   endif
 endfunc
 
@@ -624,8 +626,8 @@ func! s:vsnt_config()
   call add(b:databases, b:vsnt_database)
 
   "read user database configs
-  let q = 'SELECT ' . '_Database'  . ' ' .
-         \'FROM '   . 'vsnt_config' . ';'
+  let q = 'SELECT ' . '_Database'    .
+         \' FROM '  . 'vsnt_config'  . ';'
   let result = s:query_database(q, 'list')
   
   "add user databases if readable
@@ -648,6 +650,9 @@ func! s:vsnt_config()
       let b:vsnt_higroup = result[0]
     endif
     let b:vsnt_database = b:databases[1]
+    let b:vsnt_table = ''
+    let b:tables = []
+    let b:template = []
     call s:init_tables()
     call s:change_table(1)
   endif
@@ -664,7 +669,7 @@ func! s:vsnt_init()
   "inoremap <silent> <buffer> <expr> <Return> (line('.') == 3 ? "<C-o>:call vsnt#vsnt_main('')<CR>" : "\<CR>")
   inoremap <silent> <buffer> <expr> <Return> ((line('.') > 3 && b:mode ==# 'E') ? "\<CR>" : "<C-o>:call vsnt#vsnt_main('')<CR>")
 
-  "setup control over cursor movements
+  "control cursor movement
   augroup blockcursor
     autocmd CursorMovedI <buffer> call s:block_cursor()
   augroup END

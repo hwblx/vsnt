@@ -2,7 +2,7 @@
 " Filename: plugin/vsnt.vim
 " Author: hwblx
 " License: MIT License
-" Last Change: 2024/09/27
+" Last Change: 2024/09/30
 " =====================================
 
 let s:save_cpo = &cpo
@@ -14,9 +14,9 @@ elseif has('nvim')
   let version_info = execute('version')
   let version_line = split(version_info, "\n")[0]
   let version_number = split(version_line[-5:], '\.')
-  if version_number[0] < 1 && (version_number[1] < 3
-    \|| (version_number[1] == 3 && version_number[2] < 4))
-    echo 'vsnt requires nvim version >= 0.3.4'
+  if version_number[0] < 1 && (version_number[1] < 4
+    \|| (version_number[1] == 4 && version_number[2] < 4))
+    echo 'vsnt requires nvim version >= 0.4.4'
     finish
   endif
 elseif v:version < 801
@@ -56,7 +56,7 @@ func! vsnt#vsnt_main(...)
       let b:buffer_init = 1
     endif
   else
-    echo 'vsnt starts only from a new buffer'
+    echo 'vsnt only starts from a new buffer'
     return
   endif
 
