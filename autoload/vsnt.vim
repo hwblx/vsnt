@@ -307,15 +307,19 @@ func! s:search_note(...)
   let andor = (index(a:000, 'or', 0, 1) >= 0)? ' or ' : ' and '
 
   if a:000[0] ==# '#'
-    "read all #tags 
-    let q = 'SELECT '        . b:template[2] . ' ' .
-           \'FROM '          . b:vsnt_table   . ' ' .
+    "read all #tags
+    let column = index(b:template, '_Tags') >= 0
+              \? b:template[index(b:template, '_Tags')]
+              \: b:template[0]
+
+    let q = 'SELECT '        . column        . ' ' .
+           \'FROM '          . b:vsnt_table  . ' ' .
            \'ORDER BY '      . b:template[2] . ';'
 
   elseif a:000[0] ==# '*'
     "show all table entries
     let q = 'SELECT id,'     . b:template[0] . ' ' .
-           \'FROM '          . b:vsnt_table   . ' ' .
+           \'FROM '          . b:vsnt_table  . ' ' .
            \'WHERE id>0'     .                 ';'
 
   elseif str2nr(a:000[0]) > 0
@@ -360,6 +364,7 @@ func! s:search_note(...)
 
   if a:000[0] ==# '#'
     let stags = uniq(sort(split(join(getline(1,'$')),'\s\+')))
+    let stags = filter(stags, 'v:val[0] ==# "#"')
     :1,$d
 
     for i in range(0,len(stags)-1)
