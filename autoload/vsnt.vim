@@ -127,8 +127,9 @@ func! s:change_database(db)
       let prev_db = b:vsnt_database
       let b:vsnt_database = b
     
-      let result = s:query_database('.dbinfo', 'line')
-
+      " let result = s:query_database('.dbinfo', 'line')
+      let result = s:query_database('SELECT name FROM sqlite_master LIMIT 1;', 'line')
+      
       if match(result, 'Error') >= 0
         let b:vsnt_database = prev_db
         call setline(3, b:mode . ': ' . result[0])
@@ -626,9 +627,11 @@ endfunc
 
 func! s:vsnt_config()
   "set vsnt default database path
-  let b:vsnt_default = @d
+  let b:vsnt_default = exists('g:vsnt_default') && filereadable(expand(g:vsnt_default))
+                    \? (g:vsnt_default)
+                    \: g:vsnt_default_path
   let b:vsnt_database = b:vsnt_default
-  call add(b:databases, b:vsnt_database)
+  call add(b:databases, b:vsnt_default)
 
   "read user database configs
   let q = 'SELECT ' . '_Database'    .
@@ -654,7 +657,7 @@ func! s:vsnt_config()
     if exists('result[0]') && matchstrpos(result[0], 'Error')[1] < 0
       let b:vsnt_higroup = result[0]
     endif
-    let b:vsnt_database = b:databases[1]
+    let b:vsnt_database = b:databases[0] " set startup database
     let b:vsnt_table = ''
     let b:tables = []
     let b:template = []
@@ -684,7 +687,7 @@ func! s:vsnt_init()
   call s:reload_mode('E')
 endfunc
 
-if filereadable(expand(@d))
+if exists('g:vsnt_default_path') && filereadable(expand(g:vsnt_default_path))
   call s:vsnt_config()
   call s:vsnt_init()
 else

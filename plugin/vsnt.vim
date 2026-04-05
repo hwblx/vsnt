@@ -31,28 +31,38 @@ command! -nargs=* Snt call vsnt#vsnt_main(<f-args>)
 func! vsnt#vsnt_main(...)
   if @% ==# ''
     if !exists('b:buffer_init') || b:buffer_init < 1
-      if has('nvim') && filereadable(expand('~/.local/share/nvim/plugged/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.local/share/nvim/plugged/vsnt/data/vsnt.sqlite'
-        :source ~/.local/share/nvim/plugged/vsnt/autoload/vsnt.vim
-      elseif has('nvim') && filereadable(expand('~/.local/share/nvim/site/pack/plugins/start/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.local/share/nvim/site/pack/plugins/start/vsnt/data/vsnt.sqlite'
-        :source ~/.local/share/nvim/site/pack/plugins/start/vsnt/autoload/vsnt.vim
-      elseif has('nvim') && filereadable(expand('~/.local/share/nvim/site/pack/plugins/opt/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.local/share/nvim/site/pack/plugins/opt/vsnt/data/vsnt.sqlite'
-        :source ~/.local/share/nvim/site/pack/plugins/start/vsnt/autoload/vsnt.vim
-      elseif filereadable(expand('~/.vim/plugged/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.vim/plugged/vsnt/data/vsnt.sqlite'
-        :source ~/.vim/plugged/vsnt/autoload/vsnt.vim
-      elseif filereadable(expand('~/.vim/pack/plugins/start/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.vim/pack/plugins/start/vsnt/data/vsnt.sqlite'
-        :source ~/.vim/pack/plugins/start/vsnt/autoload/vsnt.vim
-      elseif filereadable(expand('~/.vim/pack/plugins/opt/vsnt/autoload/vsnt.vim'))
-        let @d = '~/.vim/pack/plugins/opt/vsnt/data/vsnt.sqlite'
-        :source ~/.vim/pack/plugins/opt/vsnt/autoload/vsnt.vim
+
+      if has('nvim')
+        let s:paths = [
+          \ '~/.local/share/nvim/plugged/vsnt',
+          \ '~/.local/share/nvim/site/pack/plugins/start/vsnt',
+          \ '~/.local/share/nvim/site/pack/plugins/opt/vsnt',
+          \ ]
       else
-        :echo 'autoload/vsnt.vim not found'
+        let s:paths = [
+          \ '~/.vim/plugged/vsnt',
+          \ '~/.vim/pack/plugins/start/vsnt',
+          \ '~/.vim/pack/plugins/opt/vsnt',
+          \ ]
+      endif
+
+      let s:found = 0
+      for s:path in s:paths
+        let s:base = expand(s:path)
+        if filereadable(s:base . '/autoload/vsnt.vim')
+          " let @d = s:base . '/data/vsnt.sqlite'
+          let g:vsnt_default_path = s:base . '/data/vsnt.sqlite'
+          execute 'source ' . fnameescape(s:base . '/autoload/vsnt.vim')
+          let s:found = 1
+          break
+        endif
+      endfor
+
+      if !s:found
+        echo 'autoload/vsnt.vim not found'
         return
       endif
+
       let b:buffer_init = 1
     endif
   else
@@ -65,3 +75,4 @@ endfunc
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
+
